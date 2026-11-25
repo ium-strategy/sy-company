@@ -14,7 +14,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   window.SYC_TRACK = {
     ga4: 'G-S8GF1XWQW9',                    // 기업용 GA4 측정 ID (예: G-XXXXXXXXXX)
     awId: 'AW-18252347379',       // Google Ads 전환 ID
-    awApplyLabel: '',             // Google Ads '참여 신청 클릭' 전환 라벨
+    awApplyLabel: 'Rr13CLziqb8dEPPvsv9D', // Google Ads '참여 신청 클릭' 전환 라벨
     metaPixel: '',                // Meta 픽셀 ID (숫자)
     naverKey: 's_428e213eabfe'    // 네이버 공통 인증키
   };
@@ -434,13 +434,16 @@ header .btn{display:none}.org-copyright{padding-bottom:96px}.org-inner{flex-dire
   var fab=document.getElementById('fab'),fin=document.querySelector('.final');function fv(){var r=fin.getBoundingClientRect();fab.classList.toggle('on',scrollY>700&&r.top>innerHeight-80)}addEventListener('scroll',fv,{passive:true});fv();
   var yt=document.getElementById('yt');yt.addEventListener('click',function(){window.gaEvent('cta_click',{cta_location:'briefing_play'});yt.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/9-LuG8b-qEc?autoplay=1" title="2027 참여기업 모집 온라인 설명회" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'},{once:true});
   var T=window.SYC_TRACK;
-  document.querySelectorAll('[data-cta]').forEach(function(a){a.addEventListener('click',function(){
+  document.querySelectorAll('[data-cta]').forEach(function(a){a.addEventListener('click',function(ev){
     var loc=a.dataset.cta, apply=/ninehire\.site\/job_posting/.test(a.href||'');
     window.gaEvent('cta_click',{cta_location:loc,link_url:a.href});
     if(!apply) return;
+    var newTab=ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.button===1||a.target==='_blank';
+    var href=a.href, gone=false, go=function(){ if(!gone){ gone=true; location.href=href; } };
+    if(!newTab){ ev.preventDefault(); setTimeout(go,600); }
     window.gaEvent('apply_click',{cta_location:loc});
-    try{ gtag('event','apply_click',{cta_location:loc}); }catch(e){}
-    try{ if(T.awId&&T.awApplyLabel) gtag('event','conversion',{send_to:T.awId+'/'+T.awApplyLabel}); }catch(e){}
+    try{ gtag('event','apply_click',{cta_location:loc,transport_type:'beacon'}); }catch(e){}
+    try{ if(T.awId&&T.awApplyLabel) gtag('event','conversion',{send_to:T.awId+'/'+T.awApplyLabel,transport_type:'beacon',event_callback:newTab?undefined:go}); }catch(e){}
     try{ if(window.fbq) fbq('track','Lead',{content_name:'참여기업 신청 클릭'}); }catch(e){}
     try{ if(window.wcs){ var n={}; n["cnv"]=wcs.cnv("4","1"); wcs_do(n); } }catch(e){}
   })});
